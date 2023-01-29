@@ -3,18 +3,20 @@ package com.kode19.userservice.dto.converter;
 import com.kode19.userservice.config.SecurityConfig;
 import com.kode19.userservice.dto.AuthUserAccountDTO;
 import com.kode19.userservice.dto.request.AuthUserAccountRequestDTO;
+import com.kode19.userservice.entity.AuthBranch;
 import com.kode19.userservice.entity.AuthUserAccount;
 
 import java.time.LocalDateTime;
 
 public class AuthUserAccountConverter {
-    public static AuthUserAccount convertRequestDTOtoEntity(AuthUserAccountRequestDTO dto) {
+    public static AuthUserAccount convertRequestDTOtoEntity(AuthUserAccountRequestDTO dto, AuthBranch authBranch) {
         return AuthUserAccount.builder()
                 .createdDate(LocalDateTime.now())
                 .email(dto.getEmail())
                 .fullName(dto.getFullName())
                 .password(SecurityConfig.passwordEncoder().encode(dto.getPassword()))
                 .username(dto.getUsername())
+                .authBranches(authBranch)
                 .build();
     }
 
@@ -24,6 +26,7 @@ public class AuthUserAccountConverter {
                 .fullName(entity.getFullName())
                 .username(entity.getUsername())
                 .email(entity.getEmail())
+                .branchCode(entity.getAuthBranches().getBranchAbbreviation())
                 .id(entity.getSecureId())
                 .build();
 

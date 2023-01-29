@@ -2,6 +2,10 @@ package com.kode19.userservice.dto;
 
 import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
+import jakarta.persistence.Column;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
 import lombok.*;
 
 import java.time.LocalDateTime;
@@ -12,13 +16,14 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @Builder
 @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
-public class AuthUserAccountDTO {
+public class AuthBranchDTO {
 
     private String id;
-    private String email;
-    private String username;
-    private String fullName;
-    private String branchCode;
+    private Long branchCode;
+    private String branchAbbreviation;
+    private String branchName;
+    private String branchLevel;
+    private String branchRegion;
     private LocalDateTime createdDate;
     private LocalDateTime modifiedDate;
 

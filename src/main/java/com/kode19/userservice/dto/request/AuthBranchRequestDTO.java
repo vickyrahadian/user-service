@@ -3,8 +3,8 @@ package com.kode19.userservice.dto.request;
 import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import jakarta.persistence.Column;
-import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.*;
 import org.springframework.validation.annotation.Validated;
@@ -16,29 +16,28 @@ import org.springframework.validation.annotation.Validated;
 @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
 @Validated
 @Builder
-public class AuthUserAccountRequestDTO {
+public class AuthBranchRequestDTO {
 
-    @NotEmpty
-    @Size(max = 255, min = 10)
-    @Email
-    private String email;
-    @NotEmpty
-    private String username;
-    @NotEmpty
-    @Size(max = 255, min = 10)
-    private String fullName;
-    @NotEmpty
-    @Size(max = 255, min = 10)
-    private String password;
+    @NotNull
+    private Long branchCode;
     @NotEmpty
     @Size(max = 3, min = 3)
-    private String branchCode;
+    private String branchAbbreviation;
+    @NotEmpty
+    @Size(max = 255, min = 10)
+    private String branchName;
+    @NotEmpty
+    @Size(max = 3, min = 3)
+    private String branchLevel;
+    @NotEmpty
+    @Size(max = 3, min = 3)
+    private String branchRegion;
 
-    public void toUppercase() {
-        this.email = this.email.toUpperCase();
-        this.username = this.username.toUpperCase();
-        this.fullName = this.fullName.toUpperCase();
-        this.branchCode = this.branchCode.toUpperCase();
+    public void toUppercase(){
+        this.branchAbbreviation = this.branchAbbreviation.toUpperCase();
+        this.branchName = this.branchName.toUpperCase();
+        this.branchLevel = this.branchLevel.toUpperCase();
+        this.branchRegion = this.branchRegion.toUpperCase();
     }
 
 }

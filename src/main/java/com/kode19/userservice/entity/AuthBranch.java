@@ -23,7 +23,7 @@ public class AuthBranch extends AbstractBaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     @Column(unique = true, name = "branch_code")
-    private String branchCode;
+    private Long branchCode;
     @Column(unique = true, name = "branch_abbreviation")
     private String branchAbbreviation;
     private String branchName;
