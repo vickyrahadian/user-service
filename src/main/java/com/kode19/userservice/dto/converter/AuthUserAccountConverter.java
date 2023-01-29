@@ -5,9 +5,11 @@ import com.kode19.userservice.dto.AuthUserAccountDTO;
 import com.kode19.userservice.dto.request.AuthUserAccountRequestDTO;
 import com.kode19.userservice.entity.AuthBranch;
 import com.kode19.userservice.entity.AuthUserAccount;
+import lombok.Data;
 
 import java.time.LocalDateTime;
 
+@Data
 public class AuthUserAccountConverter {
     public static AuthUserAccount convertRequestDTOtoEntity(AuthUserAccountRequestDTO dto, AuthBranch authBranch) {
         return AuthUserAccount.builder()

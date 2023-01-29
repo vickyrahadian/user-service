@@ -3,6 +3,7 @@ package com.kode19.userservice.exception;
 import com.kode19.userservice.exception.customexception.ErrorDataProcessingException;
 import com.kode19.userservice.exception.response.ErrorResponseDTO;
 import jakarta.servlet.http.HttpServletRequest;
+import lombok.extern.slf4j.Slf4j;
 import org.postgresql.util.PSQLException;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
@@ -19,6 +20,7 @@ import static org.springframework.http.HttpStatus.BAD_REQUEST;
 import static org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR;
 
 @ControllerAdvice
+@Slf4j
 public class CustomExceptionHandler {
 
     @Value("${message.exception.general}")
@@ -26,7 +28,7 @@ public class CustomExceptionHandler {
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity<Object> handleGenericException(Exception ex, HttpServletRequest request) {
-        System.out.println(ex.getMessage());
+        log.error(ex.getMessage());
         List<String> message = List.of(INTERNAL_ERROR_MESSAGE);
         ErrorResponseDTO error = new ErrorResponseDTO(INTERNAL_SERVER_ERROR.value(), message, INTERNAL_ERROR, request.getRequestURI(), LocalDateTime.now());
         return ResponseEntity.internalServerError().body(error);
