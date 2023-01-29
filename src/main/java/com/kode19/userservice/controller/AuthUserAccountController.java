@@ -1,7 +1,9 @@
 package com.kode19.userservice.controller;
 
+import com.kode19.userservice.dto.AuthUserAccountDTO;
 import com.kode19.userservice.dto.request.AuthUserAccountRequestDTO;
 import com.kode19.userservice.dto.response.DataProcessSuccessResponseDTO;
+import com.kode19.userservice.dto.response.PagingResponseDTO;
 import com.kode19.userservice.service.AuthUserAccountService;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
@@ -21,10 +23,11 @@ public class AuthUserAccountController {
     }
 
     @PostMapping()
-    public ResponseEntity<DataProcessSuccessResponseDTO> registerUserAccount(@RequestBody @Valid AuthUserAccountRequestDTO dto) {
+    public ResponseEntity<DataProcessSuccessResponseDTO<AuthUserAccountDTO>> registerUserAccount(@RequestBody @Valid AuthUserAccountRequestDTO dto) {
         return ResponseEntity
                 .created(ServletUriComponentsBuilder.fromCurrentRequest().buildAndExpand().toUri())
                 .body(service.createUser(dto));
     }
+
 
 }

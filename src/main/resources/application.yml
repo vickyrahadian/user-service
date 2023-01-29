@@ -1,0 +1,20 @@
+spring:
+  datasource:
+    username: userdb
+    url: jdbc:postgresql://user-service-db:5432/userservicedb
+    password: password12345
+  jpa:
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+        format_sql: 'true'
+    hibernate:
+      ddl-auto: update
+    show-sql: 'true'
+  security:
+    user:
+      name: user
+      password: pass
+logging:
+  level:
+    root: info

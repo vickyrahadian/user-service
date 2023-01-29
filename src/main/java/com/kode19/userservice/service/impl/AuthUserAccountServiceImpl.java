@@ -1,5 +1,6 @@
 package com.kode19.userservice.service.impl;
 
+import com.kode19.userservice.config.SecurityConfig;
 import com.kode19.userservice.dto.AuthUserAccountDTO;
 import com.kode19.userservice.dto.converter.AuthUserAccountConverter;
 import com.kode19.userservice.dto.request.AuthUserAccountRequestDTO;
@@ -10,6 +11,7 @@ import com.kode19.userservice.exception.customexception.ErrorDataProcessingExcep
 import com.kode19.userservice.service.AuthUserAccountService;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
@@ -22,6 +24,7 @@ public class AuthUserAccountServiceImpl implements AuthUserAccountService {
     public String EXCEPTION_DUPLICATE_KEYS;
     @Value("${message.added.successfully}")
     public String MESSAGES_ADDED_SUCCESSFULLY;
+
 
     private final AuthUserAccountRepository authUserAccountRepository;
 
@@ -38,13 +41,13 @@ public class AuthUserAccountServiceImpl implements AuthUserAccountService {
         }
 
         AuthUserAccount authUserAccount = AuthUserAccountConverter.convertRequestDTOtoEntity(authUserAccountRequestDTO);
-        AuthUserAccountDTO dto = AuthUserAccountConverter.convertEntityToDTO(authUserAccountRepository.save(authUserAccount));
+        authUserAccount.setPassword(SecurityConfig.passwordEncoder().encode(authUserAccount.getPassword())));
 
         return DataProcessSuccessResponseDTO.builder()
                 .path(ServletUriComponentsBuilder.fromCurrentRequest().build().toUri().getPath())
                 .message(String.format(MESSAGES_ADDED_SUCCESSFULLY, "USER ACCOUNT"))
                 .timestamp(LocalDateTime.now())
-                .data(dto)
+                .data(AuthUserAccountConverter.convertEntityToDTO(authUserAccountRepository.save(authUserAccount)))
                 .statusCode(HttpStatus.CREATED.value())
                 .build();
     }

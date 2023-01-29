@@ -1,5 +1,6 @@
 package com.kode19.userservice.dto.converter;
 
+import com.kode19.userservice.config.SecurityConfig;
 import com.kode19.userservice.dto.AuthUserAccountDTO;
 import com.kode19.userservice.dto.request.AuthUserAccountRequestDTO;
 import com.kode19.userservice.entity.AuthUserAccount;
@@ -12,7 +13,7 @@ public class AuthUserAccountConverter {
                 .createdDate(LocalDateTime.now())
                 .email(dto.getEmail())
                 .fullName(dto.getFullName())
-                .password(dto.getPassword())
+                .password(SecurityConfig.passwordEncoder().encode(dto.getPassword()))
                 .username(dto.getUsername())
                 .build();
     }
