@@ -41,7 +41,7 @@ public class AuthUserAccountServiceImpl implements AuthUserAccountService {
         }
 
         AuthUserAccount authUserAccount = AuthUserAccountConverter.convertRequestDTOtoEntity(authUserAccountRequestDTO);
-        authUserAccount.setPassword(SecurityConfig.passwordEncoder().encode(authUserAccount.getPassword())));
+        authUserAccount.setPassword(SecurityConfig.passwordEncoder().encode(authUserAccount.getPassword()));
 
         return DataProcessSuccessResponseDTO.builder()
                 .path(ServletUriComponentsBuilder.fromCurrentRequest().build().toUri().getPath())
