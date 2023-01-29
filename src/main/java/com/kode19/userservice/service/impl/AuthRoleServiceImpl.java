@@ -9,6 +9,7 @@ import com.kode19.userservice.entity.AuthRole;
 import com.kode19.userservice.exception.customexception.ErrorDataProcessingException;
 import com.kode19.userservice.repository.AuthRoleRepository;
 import com.kode19.userservice.service.AuthRoleService;
+import com.kode19.userservice.util.DataProcessingUtil;
 import com.kode19.userservice.util.PaginationUtil;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
@@ -29,16 +30,16 @@ public class AuthRoleServiceImpl implements AuthRoleService {
     private final AuthRoleRepository authRoleRepository;
 
     @Value("${message.added.successfully}")
-    public String MESSAGES_ADDED_SUCCESSFULLY;
+    public String messageAddedSuccessfully;
 
     @Value("${message.updated.successfully}")
-    public String MESSAGES_UPDATED_SUCCESSFULLY;
+    public String messageUpdatedSuccessfully;
 
     @Value("${message.exception.duplicate.keys}")
-    public String EXCEPTION_DUPLICATE_KEYS;
+    public String exceptionDuplicateKey;
 
     @Value("${message.exception.data.not.found}")
-    public String EXCEPTION_DATA_NOT_FOUND;
+    public String exceptionDataNotFound;
 
 
     public AuthRoleServiceImpl(AuthRoleRepository authRoleRepository) {
@@ -46,37 +47,37 @@ public class AuthRoleServiceImpl implements AuthRoleService {
     }
 
     @Override
-    public DataProcessSuccessResponseDTO createRole(AuthRoleRequestDTO authRoleRequestDTO) {
+    public DataProcessSuccessResponseDTO<AuthRoleDTO> createRole(AuthRoleRequestDTO authRoleRequestDTO) {
         authRoleRequestDTO.toUppercase();
 
         if (authRoleRepository.findByRoleName(authRoleRequestDTO.getRoleName()).isPresent()) {
-            throw new ErrorDataProcessingException(String.format(EXCEPTION_DUPLICATE_KEYS, authRoleRequestDTO.getRoleName()));
+            throw new ErrorDataProcessingException(String.format(exceptionDuplicateKey, authRoleRequestDTO.getRoleName()));
         }
 
         AuthRole authRole = AuthRoleConverter.convertRequestDTOtoEntity(authRoleRequestDTO);
         AuthRoleDTO authRoleDTO = AuthRoleConverter.convertEntityToDTO(authRoleRepository.save(authRole));
 
-        return DataProcessSuccessResponseDTO.builder()
-                .path(ServletUriComponentsBuilder.fromCurrentRequest().build().toUri().getPath())
-                .message(String.format(MESSAGES_ADDED_SUCCESSFULLY, "ROLE"))
-                .timestamp(LocalDateTime.now())
-                .data(authRoleDTO)
-                .statusCode(HttpStatus.CREATED.value())
-            .build();
+
+        return DataProcessingUtil.createResultDataProcessingDTO(
+                authRoleDTO,
+                ServletUriComponentsBuilder.fromCurrentRequest().build().toUri().getPath(),
+                HttpStatus.CREATED.value(),
+                String.format(messageAddedSuccessfully, "ROLE")
+        );
     }
 
     @Override
-    public DataProcessSuccessResponseDTO updateRole(String secureId, AuthRoleRequestDTO authRoleRequestDTO) {
+    public DataProcessSuccessResponseDTO<AuthRoleDTO> updateRole(String secureId, AuthRoleRequestDTO authRoleRequestDTO) {
         authRoleRequestDTO.toUppercase();
 
         Optional<AuthRole> authRole = authRoleRepository.findBySecureId(secureId);
 
         if (authRole.isEmpty()) {
-            throw new ErrorDataProcessingException(String.format(EXCEPTION_DATA_NOT_FOUND, secureId));
+            throw new ErrorDataProcessingException(String.format(exceptionDataNotFound, secureId));
         }
 
         if (authRoleRepository.findByRoleName(authRoleRequestDTO.getRoleName()).isPresent()) {
-            throw new ErrorDataProcessingException(String.format(EXCEPTION_DUPLICATE_KEYS, authRoleRequestDTO.getRoleName()));
+            throw new ErrorDataProcessingException(String.format(exceptionDuplicateKey, authRoleRequestDTO.getRoleName()));
         }
 
         AuthRole updatedAuthRole = AuthRoleConverter.convertRequestDTOtoEntity(authRoleRequestDTO);
@@ -86,20 +87,19 @@ public class AuthRoleServiceImpl implements AuthRoleService {
 
         AuthRoleDTO authRoleDTO = AuthRoleConverter.convertEntityToDTO(authRoleRepository.save(updatedAuthRole));
 
-        return DataProcessSuccessResponseDTO.builder()
-                .path(ServletUriComponentsBuilder.fromCurrentRequest().build().toUri().getPath())
-                .message(String.format(MESSAGES_UPDATED_SUCCESSFULLY, "ROLE"))
-                .timestamp(LocalDateTime.now())
-                .data(authRoleDTO)
-                .statusCode(HttpStatus.OK.value())
-                .build();
+        return DataProcessingUtil.createResultDataProcessingDTO(
+                authRoleDTO,
+                ServletUriComponentsBuilder.fromCurrentRequest().build().toUri().getPath(),
+                HttpStatus.CREATED.value(),
+                String.format(messageUpdatedSuccessfully, "ROLE")
+        );
     }
 
     @Override
     public void deleteRole(String secureId) {
         Optional<AuthRole> authRole = authRoleRepository.findBySecureId(secureId);
         if (authRole.isEmpty()) {
-            throw new ErrorDataProcessingException(String.format(EXCEPTION_DATA_NOT_FOUND, secureId));
+            throw new ErrorDataProcessingException(String.format(exceptionDataNotFound, secureId));
         }
 
         authRole.get().setDeleted(true);
@@ -110,11 +110,11 @@ public class AuthRoleServiceImpl implements AuthRoleService {
     }
 
     @Override
-    public PagingResponseDTO getAllRoles(Integer page,
-                                         Integer limit,
-                                         String sortBy,
-                                         String direction,
-                                         String path) {
+    public PagingResponseDTO<AuthRoleDTO> getAllRoles(Integer page,
+                                                      Integer limit,
+                                                      String sortBy,
+                                                      String direction,
+                                                      String path) {
 
         Sort sort = Sort.by(new Sort.Order(PaginationUtil.getSortBy(direction), sortBy));
         Pageable pageable = PageRequest.of(page, limit, sort);

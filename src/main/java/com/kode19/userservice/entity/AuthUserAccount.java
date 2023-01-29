@@ -2,8 +2,6 @@ package com.kode19.userservice.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
-import org.springframework.data.annotation.CreatedDate;
-import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -26,13 +24,9 @@ public class AuthUserAccount extends AbstractBaseEntity implements UserDetails {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    @Column(length = 255)
     private String email;
-    @Column(length = 255)
     private String username;
-    @Column(length = 255)
     private String fullName;
-    @Column(length = 255)
     private String password;
 
     @ManyToMany(fetch = FetchType.EAGER)

@@ -3,10 +3,8 @@ package com.kode19.userservice.entity;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.Where;
-import org.springframework.security.core.GrantedAuthority;
 
 import java.time.LocalDateTime;
-import java.util.List;
 
 @Getter
 @Setter

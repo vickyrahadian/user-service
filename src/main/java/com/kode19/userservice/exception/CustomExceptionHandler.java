@@ -24,12 +24,12 @@ import static org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR;
 public class CustomExceptionHandler {
 
     @Value("${message.exception.general}")
-    private String INTERNAL_ERROR_MESSAGE;
+    private String internalErrorMessages;
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity<Object> handleGenericException(Exception ex, HttpServletRequest request) {
         log.error(ex.getMessage());
-        List<String> message = List.of(INTERNAL_ERROR_MESSAGE);
+        List<String> message = List.of(internalErrorMessages);
         ErrorResponseDTO error = new ErrorResponseDTO(INTERNAL_SERVER_ERROR.value(), message, INTERNAL_ERROR, request.getRequestURI(), LocalDateTime.now());
         return ResponseEntity.internalServerError().body(error);
     }

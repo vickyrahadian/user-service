@@ -8,12 +8,12 @@ import com.kode19.userservice.entity.AuthBranch;
 import com.kode19.userservice.exception.customexception.ErrorDataProcessingException;
 import com.kode19.userservice.repository.AuthBranchRepository;
 import com.kode19.userservice.service.AuthBranchService;
+import com.kode19.userservice.util.DataProcessingUtil;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
-import java.time.LocalDateTime;
 import java.util.Optional;
 
 @Service
@@ -21,10 +21,10 @@ public class AuthBranchServiceImpl implements AuthBranchService {
 
 
     @Value("${message.added.successfully}")
-    public String MESSAGES_ADDED_SUCCESSFULLY;
+    public String messageAddedSuccessfully;
 
     @Value("${message.exception.duplicate.keys}")
-    public String EXCEPTION_DUPLICATE_KEYS;
+    public String exceptionDuplicateKeys;
 
     private final AuthBranchRepository authBranchRepository;
 
@@ -33,23 +33,22 @@ public class AuthBranchServiceImpl implements AuthBranchService {
     }
 
     @Override
-    public DataProcessSuccessResponseDTO createRole(AuthBranchRequestDTO authBranchRequestDTO) {
+    public DataProcessSuccessResponseDTO<AuthBranchDTO> createRole(AuthBranchRequestDTO authBranchRequestDTO) {
         authBranchRequestDTO.toUppercase();
 
         if (authBranchRepository.findByBranchCodeOrBranchAbbreviation(authBranchRequestDTO.getBranchCode(), authBranchRequestDTO.getBranchAbbreviation()).isPresent()) {
-            throw new ErrorDataProcessingException(String.format(EXCEPTION_DUPLICATE_KEYS, authBranchRequestDTO.getBranchCode() + "/" + authBranchRequestDTO.getBranchAbbreviation()));
+            throw new ErrorDataProcessingException(String.format(exceptionDuplicateKeys, authBranchRequestDTO.getBranchCode() + "/" + authBranchRequestDTO.getBranchAbbreviation()));
         }
 
         AuthBranch authBranch = AuthBranchConverter.convertRequestDTOtoEntity(authBranchRequestDTO);
         AuthBranchDTO authRoleDTO = AuthBranchConverter.convertEntityToDTO(authBranchRepository.save(authBranch));
 
-        return DataProcessSuccessResponseDTO.builder()
-                .path(ServletUriComponentsBuilder.fromCurrentRequest().build().toUri().getPath())
-                .message(String.format(MESSAGES_ADDED_SUCCESSFULLY, "BRANCH"))
-                .timestamp(LocalDateTime.now())
-                .data(authRoleDTO)
-                .statusCode(HttpStatus.CREATED.value())
-                .build();
+        return DataProcessingUtil.createResultDataProcessingDTO(
+                authRoleDTO,
+                ServletUriComponentsBuilder.fromCurrentRequest().build().toUri().getPath(),
+                HttpStatus.CREATED.value(),
+                String.format(messageAddedSuccessfully, "BRANCH")
+        );
     }
 
     @Override

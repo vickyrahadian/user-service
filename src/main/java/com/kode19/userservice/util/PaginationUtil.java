@@ -1,14 +1,16 @@
 package com.kode19.userservice.util;
 
 import com.kode19.userservice.dto.response.PagingResponseDTO;
-import lombok.Data;
 import org.springframework.data.domain.Sort;
 
 import java.time.LocalDateTime;
 import java.util.List;
 
-@Data
 public class PaginationUtil {
+
+    private PaginationUtil() {
+        throw new IllegalStateException("Utility class");
+    }
 
     public static <T> PagingResponseDTO<T> createResultPageDTO(
             List<T> tList,

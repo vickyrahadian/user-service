@@ -36,7 +36,7 @@ class AuthRoleControllerTest {
 
 
     @Test
-    public void test_api_create_role() throws Exception {
+    void test_api_create_role() throws Exception {
 
         getPerform("role_name", "KEPALA KANTOR KAS")
                 .andExpect(status().isCreated());
@@ -56,7 +56,7 @@ class AuthRoleControllerTest {
 
 
     @Test
-    public void test_api_get_roles() throws Exception {
+    void test_api_get_roles() throws Exception {
         mockMvc.perform(get("/api/v1/auth/role")).andExpect(status().isOk());
     }
 

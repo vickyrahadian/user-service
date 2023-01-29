@@ -23,7 +23,7 @@ public class AuthUserAccountController {
     }
 
     @GetMapping()
-    public ResponseEntity<PagingResponseDTO> getAllUserAccount(
+    public ResponseEntity<PagingResponseDTO<AuthUserAccountDTO>> getAllUserAccount(
             @RequestParam(defaultValue = "0") Integer page,
             @RequestParam(defaultValue = "10") Integer limit,
             @RequestParam(defaultValue = "username") String sortBy,

@@ -1,5 +1,6 @@
 package com.kode19.userservice.controller;
 
+import com.kode19.userservice.dto.AuthRoleDTO;
 import com.kode19.userservice.dto.request.AuthRoleRequestDTO;
 import com.kode19.userservice.dto.response.DataProcessSuccessResponseDTO;
 import com.kode19.userservice.dto.response.PagingResponseDTO;
@@ -22,7 +23,7 @@ public class AuthRoleController {
     }
 
     @GetMapping()
-    public ResponseEntity<PagingResponseDTO> getAllRoles(
+    public ResponseEntity<PagingResponseDTO<AuthRoleDTO>> getAllRoles(
             @RequestParam(defaultValue = "0") Integer page,
             @RequestParam(defaultValue = "10") Integer limit,
             @RequestParam(defaultValue = "roleName") String sortBy,
@@ -33,14 +34,14 @@ public class AuthRoleController {
     }
 
     @PostMapping()
-    public ResponseEntity<DataProcessSuccessResponseDTO> registerRole(@RequestBody @Valid AuthRoleRequestDTO authRoleRequestDTO) {
+    public ResponseEntity<DataProcessSuccessResponseDTO<AuthRoleDTO>> registerRole(@RequestBody @Valid AuthRoleRequestDTO authRoleRequestDTO) {
         return ResponseEntity
                 .created(ServletUriComponentsBuilder.fromCurrentRequest().buildAndExpand().toUri())
                 .body(service.createRole(authRoleRequestDTO));
     }
 
     @PutMapping("{secureId}")
-    public ResponseEntity<DataProcessSuccessResponseDTO> updateRole(
+    public ResponseEntity<DataProcessSuccessResponseDTO<AuthRoleDTO>> updateRole(
             @PathVariable String secureId,
             @RequestBody @Valid AuthRoleRequestDTO authRoleRequestDTO
     ) {

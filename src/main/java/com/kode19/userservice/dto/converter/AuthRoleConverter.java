@@ -1,14 +1,17 @@
 package com.kode19.userservice.dto.converter;
 
-import com.kode19.userservice.dto.request.AuthRoleRequestDTO;
 import com.kode19.userservice.dto.AuthRoleDTO;
+import com.kode19.userservice.dto.request.AuthRoleRequestDTO;
 import com.kode19.userservice.entity.AuthRole;
-import lombok.Data;
 
 import java.time.LocalDateTime;
 
-@Data
 public class AuthRoleConverter {
+
+    private AuthRoleConverter() {
+        throw new IllegalStateException("Utility class");
+    }
+
     public static AuthRole convertRequestDTOtoEntity(AuthRoleRequestDTO dto) {
         return AuthRole.builder()
                 .createdDate(LocalDateTime.now())

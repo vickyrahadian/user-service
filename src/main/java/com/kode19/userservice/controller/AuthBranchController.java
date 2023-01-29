@@ -1,7 +1,7 @@
 package com.kode19.userservice.controller;
 
+import com.kode19.userservice.dto.AuthBranchDTO;
 import com.kode19.userservice.dto.request.AuthBranchRequestDTO;
-import com.kode19.userservice.dto.request.AuthRoleRequestDTO;
 import com.kode19.userservice.dto.response.DataProcessSuccessResponseDTO;
 import com.kode19.userservice.service.AuthBranchService;
 import jakarta.validation.Valid;
@@ -26,8 +26,8 @@ public class AuthBranchController {
     }
 
     @PostMapping
-    public ResponseEntity<DataProcessSuccessResponseDTO> registerRole(@RequestBody @Valid AuthBranchRequestDTO authBranchRequestDTO) {
-        return ResponseEntity
+    public ResponseEntity<DataProcessSuccessResponseDTO<AuthBranchDTO>> registerRole(@RequestBody @Valid AuthBranchRequestDTO authBranchRequestDTO) {
+         return ResponseEntity
                 .created(ServletUriComponentsBuilder.fromCurrentRequest().buildAndExpand().toUri())
                 .body(authBranchService.createRole(authBranchRequestDTO));
     }
