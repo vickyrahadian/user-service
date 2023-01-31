@@ -6,9 +6,7 @@ import java.time.LocalDateTime;
 
 public class DataProcessingUtil {
 
-    private DataProcessingUtil() {
-        throw new IllegalStateException("Utility class");
-    }
+    private DataProcessingUtil() {}
 
     public static <T> DataProcessSuccessResponseDTO<T> createResultDataProcessingDTO(
             T data,

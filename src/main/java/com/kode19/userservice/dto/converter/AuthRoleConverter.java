@@ -8,9 +8,7 @@ import java.time.LocalDateTime;
 
 public class AuthRoleConverter {
 
-    private AuthRoleConverter() {
-        throw new IllegalStateException("Utility class");
-    }
+    private AuthRoleConverter() {}
 
     public static AuthRole convertRequestDTOtoEntity(AuthRoleRequestDTO dto) {
         return AuthRole.builder()
@@ -25,6 +23,7 @@ public class AuthRoleConverter {
                 .id(authRole.getSecureId())
                 .createDate(authRole.getCreatedDate())
                 .modifiedDate(authRole.getModifiedDate())
+                .authorities(authRole.getAuthority())
                 .build();
 
     }

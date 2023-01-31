@@ -1,6 +1,7 @@
 package com.kode19.userservice.service;
 
 import com.kode19.userservice.dto.AuthRoleDTO;
+import com.kode19.userservice.dto.converter.AuthRoleConverter;
 import com.kode19.userservice.dto.request.AuthRoleRequestDTO;
 import com.kode19.userservice.dto.response.DataProcessSuccessResponseDTO;
 import com.kode19.userservice.dto.response.PagingResponseDTO;
@@ -10,6 +11,9 @@ import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Modifier;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -67,7 +71,7 @@ class AuthRoleServiceTest {
     @Order(3)
     void getAllRoles() {
 
-        PagingResponseDTO<AuthRoleDTO> allRoles = authRoleService.getAllRoles(0, 10, "roleName", "ASC", null);
+        PagingResponseDTO<AuthRoleDTO> allRoles = authRoleService.getAllRoles(0, 10, "roleName", "DESC", null);
         assertTrue(allRoles.getData().size() > 0);
 
     }
@@ -81,6 +85,18 @@ class AuthRoleServiceTest {
             byRoleName = authRoleRepository.findByRoleName(roleNameUpdated);
             assertTrue(byRoleName.isEmpty(), "FAIL TO DELETE DATA");
         }
+
+    }
+
+    @Test
+    @Order(5)
+    void tryInitiateUtilityClass() throws NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException {
+
+        Constructor<AuthRoleConverter> constructor = AuthRoleConverter.class.getDeclaredConstructor();
+        assertTrue(Modifier.isPrivate(constructor.getModifiers()));
+
+        constructor.setAccessible(true);
+        constructor.newInstance();
 
     }
 }

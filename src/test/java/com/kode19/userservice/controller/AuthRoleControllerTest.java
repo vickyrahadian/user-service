@@ -43,7 +43,6 @@ class AuthRoleControllerTest {
     @Test
     @Order(1)
     void registerRoleTest() throws Exception {
-        System.out.println("CREATE : " + roleNameCreated);
         this.mockMvc
                 .perform(post("/api/v1/auth/role")
                         .content(createContent(roleNameCreated))
@@ -78,11 +77,66 @@ class AuthRoleControllerTest {
                 .andReturn();
     }
 
+
     @Test
     @Order(4)
+    void registerRoleTest_failed_no_content() throws Exception {
+        this.mockMvc
+                .perform(post("/api/v1/auth/role")
+                        .content(createContent(""))
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andDo(print())
+                .andExpect(status().isBadRequest())
+                .andReturn();
+    }
+
+    @Test
+    @Order(5)
+    void registerRoleTest_failed_duplicate() throws Exception {
+        this.mockMvc
+                .perform(post("/api/v1/auth/role")
+                        .content(createContent(roleNameCreated))
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andDo(print())
+                .andExpect(status().isBadRequest())
+                .andReturn();
+    }
+
+    @Test
+    @Order(971)
+    void updateRole_failed_duplicate() throws Exception {
+        Optional<AuthRole> byRoleName = authRoleRepository.findByRoleName(roleNameCreated);
+
+        if (byRoleName.isPresent()) {
+            this.mockMvc
+                    .perform(put("/api/v1/auth/role/" + byRoleName.get().getSecureId())
+                            .content(createContent(roleNameCreated))
+                            .contentType(MediaType.APPLICATION_JSON))
+                    .andDo(print())
+                    .andExpect(status().isBadRequest())
+                    .andReturn();
+        }
+    }
+
+    @Test
+    @Order(972)
+    void updateRole_failed_empty() throws Exception {
+        Optional<AuthRole> byRoleName = authRoleRepository.findByRoleName(roleNameCreated);
+
+        if (byRoleName.isPresent()) {
+            this.mockMvc
+                    .perform(put("/api/v1/auth/role/XXX")
+                            .content(createContent(roleNameUpdated))
+                            .contentType(MediaType.APPLICATION_JSON))
+                    .andDo(print())
+                    .andExpect(status().isBadRequest())
+                    .andReturn();
+        }
+    }
+
+    @Test
+    @Order(973)
     void updateRole() throws Exception {
-        System.out.println("UPDATE : " + roleNameCreated);
-        System.out.println("UPDATE : " + roleNameUpdated);
         Optional<AuthRole> byRoleName = authRoleRepository.findByRoleName(roleNameCreated);
 
         if (byRoleName.isPresent()) {
@@ -98,9 +152,8 @@ class AuthRoleControllerTest {
     }
 
     @Test
-    @Order(5)
+    @Order(981)
     void deleteRole() throws Exception {
-        System.out.println("DELETE : " + roleNameUpdated);
         Optional<AuthRole> byRoleName = authRoleRepository.findByRoleName(roleNameUpdated);
         if (byRoleName.isPresent()) {
             this.mockMvc
@@ -114,17 +167,17 @@ class AuthRoleControllerTest {
     }
 
     @Test
-    @Order(6)
-    void registerRoleTest_failed_no_content() throws Exception {
+    @Order(982)
+    void deleteRole_fail_empty() throws Exception {
         this.mockMvc
-                .perform(post("/api/v1/auth/role"))
+                .perform(delete("/api/v1/auth/role/XXX"))
                 .andDo(print())
-                .andExpect(status().is5xxServerError())
+                .andExpect(status().isBadRequest())
                 .andReturn();
     }
 
     @Test
-    @Order(99)
+    @Order(1000)
     void getAllRolesTest() throws Exception {
         this.mockMvc
                 .perform(get("/api/v1/auth/role"))

@@ -9,7 +9,6 @@ import java.util.List;
 public class PaginationUtil {
 
     private PaginationUtil() {
-        throw new IllegalStateException("Utility class");
     }
 
     public static <T> PagingResponseDTO<T> createResultPageDTO(

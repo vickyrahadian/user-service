@@ -6,12 +6,10 @@ import lombok.*;
 
 import java.time.LocalDateTime;
 
-@Builder
 @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
 @Getter
 @Setter
 @NoArgsConstructor
-@AllArgsConstructor
 public class DataProcessSuccessResponseDTO<T> {
 
     T data;

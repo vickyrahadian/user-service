@@ -9,11 +9,9 @@ import org.springframework.validation.annotation.Validated;
 
 @Getter
 @Setter
-@AllArgsConstructor
 @NoArgsConstructor
 @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
 @Validated
-@Builder
 public class AuthRoleRequestDTO {
 
     @NotEmpty

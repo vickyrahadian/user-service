@@ -7,9 +7,7 @@ import lombok.*;
 import java.time.LocalDateTime;
 
 @Getter
-@Setter
 @AllArgsConstructor
-@NoArgsConstructor
 @Builder
 @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
 public class AuthRoleDTO {
@@ -18,5 +16,6 @@ public class AuthRoleDTO {
     private LocalDateTime createDate;
     private LocalDateTime modifiedDate;
     private String id;
+    private String authorities;
 
 }
