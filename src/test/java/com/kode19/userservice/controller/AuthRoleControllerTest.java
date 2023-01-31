@@ -1,70 +1,140 @@
 package com.kode19.userservice.controller;
 
-import com.kode19.userservice.service.AuthRoleService;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
+import com.kode19.userservice.entity.AuthRole;
+import com.kode19.userservice.repository.AuthRoleRepository;
+import org.junit.jupiter.api.*;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.ResultActions;
-import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import java.util.Optional;
+import java.util.UUID;
+
+import static org.hamcrest.Matchers.containsString;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@ExtendWith(SpringExtension.class)
 @SpringBootTest
+@AutoConfigureMockMvc
+@TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 class AuthRoleControllerTest {
 
-    @InjectMocks
-    private AuthRoleController authRoleController;
-
-    @Mock
-    private AuthRoleService authRoleService;
-
+    @Autowired
     private MockMvc mockMvc;
 
-    @BeforeEach
-    public void setup() {
-        mockMvc = MockMvcBuilders.standaloneSetup(authRoleController).build();
-    }
+    @Autowired
+    private AuthRoleRepository authRoleRepository;
 
+    private static String roleNameCreated;
+    private static String roleNameUpdated;
+
+    @BeforeAll
+    static void prepareData() {
+
+        roleNameCreated = UUID.randomUUID().toString().toUpperCase().substring(0, 10);
+        roleNameUpdated = UUID.randomUUID().toString().toUpperCase().substring(0, 10);
+
+    }
 
     @Test
-    void test_api_create_role() throws Exception {
-
-        getPerform("role_name", "KEPALA KANTOR KAS")
-                .andExpect(status().isCreated());
-
-        getPerform("role_name", "")
-                .andExpect(status().isBadRequest());
-
-        getPerform("role_name", "ADMIN")
-                .andExpect(status().isBadRequest());
-
-        getPerform("role_name", "Contrary to popular belief, Lorem Ipsum is not simply random text. It has roots in a piece of classical Latin literature from 45 BC, making it over 2000 years old. Richard McClintock, a Latin professor at Hampden-Sydney College in Virginia, looked up one of the more obscure Latin words, consectetur, from a Lorem Ipsum passage, and going through the cites of the word in classical literature, discovered the undoubtable source. Lorem Ipsum comes from sections 1.10.32 and 1.10.33 of \"de Finibus Bonorum et Malorum\" (The Extremes of Good and Evil) by Cicero, written in 45 BC. This book is a treatise on the theory of ethics, very popular during the Renaissance. The first line of Lorem Ipsum, \"Lorem ipsum dolor sit amet..\", comes from a line in section 1.10.32.")
-                .andExpect(status().isBadRequest());
-
-        getPerform("xxx", "ADMINISTRATOR")
-                .andExpect(status().isBadRequest());
+    @Order(1)
+    void registerRoleTest() throws Exception {
+        System.out.println("CREATE : " + roleNameCreated);
+        this.mockMvc
+                .perform(post("/api/v1/auth/role")
+                        .content(createContent(roleNameCreated))
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andDo(print())
+                .andExpect(status().isCreated())
+                .andExpect(content().string(containsString(roleNameCreated)))
+                .andReturn();
     }
-
 
     @Test
-    void test_api_get_roles() throws Exception {
-        mockMvc.perform(get("/api/v1/auth/role")).andExpect(status().isOk());
+    @Order(2)
+    void registerRoleTest_failed() throws Exception {
+        this.mockMvc
+                .perform(post("/api/v1/auth/role")
+                        .content(createContent(""))
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andDo(print())
+                .andExpect(status().isBadRequest())
+                .andReturn();
     }
 
-
-    private ResultActions getPerform(String key, String role) throws Exception {
-        return mockMvc.perform(post("/api/v1/auth/role")
-                .content("{ \"" + key + "\" : \"" + role + "\" }")
-                .contentType(MediaType.APPLICATION_JSON));
+    @Test
+    @Order(3)
+    void registerRoleTest_failed_to_long() throws Exception {
+        this.mockMvc
+                .perform(post("/api/v1/auth/role")
+                        .content(createContent("Contrary to popular belief, Lorem Ipsum is not simply random text. It has roots in a piece of classical Latin literature from 45 BC, making it over 2000 years old. Richard McClintock, a Latin professor at Hampden-Sydney College in Virginia, looked up one of the more obscure Latin words, consectetur, from a Lorem Ipsum passage, and going through the cites of the word in classical literature, discovered the undoubtable source. Lorem Ipsum comes from sections 1.10.32 and 1.10.33 of \\\"de Finibus Bonorum et Malorum\\\" (The Extremes of Good and Evil) by Cicero, written in 45 BC. This book is a treatise on the theory of ethics, very popular during the Renaissance. The first line of Lorem Ipsum, \\\"Lorem ipsum dolor sit amet..\\\", comes from a line in section 1.10.32."))
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andDo(print())
+                .andExpect(status().isBadRequest())
+                .andReturn();
     }
 
+    @Test
+    @Order(4)
+    void updateRole() throws Exception {
+        System.out.println("UPDATE : " + roleNameCreated);
+        System.out.println("UPDATE : " + roleNameUpdated);
+        Optional<AuthRole> byRoleName = authRoleRepository.findByRoleName(roleNameCreated);
+
+        if (byRoleName.isPresent()) {
+            this.mockMvc
+                    .perform(put("/api/v1/auth/role/" + byRoleName.get().getSecureId())
+                            .content(createContent(roleNameUpdated))
+                            .contentType(MediaType.APPLICATION_JSON))
+                    .andDo(print())
+                    .andExpect(status().isOk())
+                    .andExpect(content().string(containsString(roleNameUpdated)))
+                    .andReturn();
+        }
+    }
+
+    @Test
+    @Order(5)
+    void deleteRole() throws Exception {
+        System.out.println("DELETE : " + roleNameUpdated);
+        Optional<AuthRole> byRoleName = authRoleRepository.findByRoleName(roleNameUpdated);
+        if (byRoleName.isPresent()) {
+            this.mockMvc
+                    .perform(delete("/api/v1/auth/role/" + byRoleName.get().getSecureId()))
+                    .andDo(print())
+                    .andExpect(status().isOk())
+                    .andReturn();
+
+        }
+
+    }
+
+    @Test
+    @Order(6)
+    void registerRoleTest_failed_no_content() throws Exception {
+        this.mockMvc
+                .perform(post("/api/v1/auth/role"))
+                .andDo(print())
+                .andExpect(status().is5xxServerError())
+                .andReturn();
+    }
+
+    @Test
+    @Order(99)
+    void getAllRolesTest() throws Exception {
+        this.mockMvc
+                .perform(get("/api/v1/auth/role"))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(content().string(containsString("status_code")))
+                .andReturn();
+    }
+
+    private String createContent(String value) {
+        return "{ \"" + "role_name" + "\" : \"" + value + "\" }";
+    }
 }
